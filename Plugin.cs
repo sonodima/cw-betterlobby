@@ -32,7 +32,45 @@ public sealed class Plugin : BaseUnityPlugin
 
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        EscapeMenuUtils.CreateButton("FILL", "FILL LOBBY", () => LobbyUtils.MakePublic());
+        // This is used to keep track of how many players there are, so that if the user
+        // is using the late join feature, the lobby does not stay open after it has
+        // filled. (Landfall thank me later)
+        if (PlayerHandler.instance != null)
+        {
+            PlayerHandler.instance.OnPlayerJoined += OnPlayerJoined;
+        }
+
+        EscapeMenuUtils.CreateButton("FILL", "FILL LOBBY", OnFillPress);
+    }
+
+    private void OnPlayerJoined(Player player)
+    {
+        int curPlayers = PlayerHandler.instance?.players.Count ?? 1;
+        int maxPlayers = LobbyUtils.MaxPlayers ?? 4;
+        Logger.LogInfo($"Player has joined the lobby! {curPlayers} / {maxPlayers}");
+        if (curPlayers >= maxPlayers)
+        {
+            // Lobby has filled: if the game has already started and the lobby is
+            // open for late join, stop accepting new clients. 2kind I know.
+            if (SurfaceNetworkHandler.HasStarted && LobbyUtils.IsOpen)
+            {
+                Logger.LogWarning("Maximum number of players reached, closing lobby...");
+                LobbyUtils.StopAccepting();
+            }
+        }
+    }
+
+    private void OnFillPress()
+    {
+        int curPlayers = PlayerHandler.instance?.players.Count ?? 1;
+        int maxPlayers = LobbyUtils.MaxPlayers ?? 4;
+        if (curPlayers >= maxPlayers)
+        {
+            Logger.LogWarning("Lobby is already full, will not make it public.");    
+            return;
+        }
+
+        LobbyUtils.MakePublic();
     }
 }
 
@@ -91,6 +129,10 @@ internal sealed class EscapeMenuUtils : MonoBehaviour
 
 internal static class LobbyUtils
 {
+    private static bool MasterClient => MainMenuHandler.SteamLobbyHandler?.MasterClient ?? false;
+    internal static bool IsOpen = (PhotonNetwork.CurrentRoom?.IsOpen ?? false) 
+        && (PhotonNetwork.CurrentRoom?.IsVisible ?? false);
+
     private static CSteamID? CurrentID
     {
         get
@@ -106,11 +148,18 @@ internal static class LobbyUtils
         }
     }
 
-    private static bool MasterClient
+    internal static int? MaxPlayers
     {
         get
         {
-            return MainMenuHandler.SteamLobbyHandler?.MasterClient ?? false;
+            if (MainMenuHandler.SteamLobbyHandler == null)
+            {
+                return null;
+            }
+
+            return Traverse.Create(MainMenuHandler.SteamLobbyHandler)
+                .Field("m_MaxPlayers")
+                .GetValue<int>();
         }
     }
 
@@ -130,15 +179,35 @@ internal static class LobbyUtils
         }
 
         SteamMatchmaking.SetLobbyType(id.Value, ELobbyType.k_ELobbyTypePublic);
-        SteamMatchmaking.SetLobbyJoinable(id.Value, true);
+        SetJoinable(id.Value, true);
+        return true;
+    }
 
-        // Allows players to join the game after it has started.
-        if (PhotonNetwork.CurrentRoom != null)
+    internal static bool StopAccepting()
+    {
+        CSteamID? id = CurrentID;
+        if (id == null)
         {
-            PhotonNetwork.CurrentRoom.IsOpen = true;
-            PhotonNetwork.CurrentRoom.IsVisible = true;
+            return false;
         }
 
+        if (!MasterClient)
+        {
+            return false;
+        }
+
+        SetJoinable(id.Value, false);
         return true;
+    }
+
+    private static void SetJoinable(CSteamID id, bool value)
+    {
+        SteamMatchmaking.SetLobbyJoinable(id, value);
+
+        if (PhotonNetwork.CurrentRoom != null)
+        {
+            PhotonNetwork.CurrentRoom.IsOpen = value;
+            PhotonNetwork.CurrentRoom.IsVisible = value;
+        }
     }
 }
