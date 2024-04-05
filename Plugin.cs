@@ -33,12 +33,18 @@ public sealed class Plugin : BaseUnityPlugin
 
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
+        // Only allow the plugin to run when the player is on the surface.
+        if (!GameUtils.IsOnSurface)
+        {
+            return;
+        }
+
         // This is used to keep track of how many players there are, so that if the user
         // is using the late join feature, the lobby does not stay open after it has
         // filled. (Landfall thank me later)
         if (PlayerHandler.instance != null)
         {
-            PlayerHandler.instance.OnPlayerJoined 
+            PlayerHandler.instance.OnPlayerJoined
                 += (player) => StartCoroutine(OnPlayerJoined(player));
         }
 
@@ -47,7 +53,7 @@ public sealed class Plugin : BaseUnityPlugin
 
     private IEnumerator OnPlayerJoined(Player player)
     {
-        int curPlayers = PlayerHandler.instance?.players.Count ?? 1;
+        int curPlayers = LobbyUtils.CurPlayers ?? 1;
         int maxPlayers = LobbyUtils.MaxPlayers ?? 4;
         Logger.LogInfo($"Player has joined the lobby! {curPlayers} / {maxPlayers}");
         if (curPlayers >= maxPlayers)
@@ -81,12 +87,23 @@ public sealed class Plugin : BaseUnityPlugin
         int maxPlayers = LobbyUtils.MaxPlayers ?? 4;
         if (curPlayers >= maxPlayers)
         {
-            Logger.LogWarning("Lobby is already full, will not make it public.");    
+            Logger.LogWarning("Lobby is already full, will not make it public.");
+            return;
+        }
+
+        if (!GameUtils.IsOnSurface)
+        {
+            Logger.LogWarning("You need to be on surface to fill the lobby!");
             return;
         }
 
         LobbyUtils.MakePublic();
     }
+}
+
+internal sealed class GameUtils : MonoBehaviour
+{
+    internal static bool IsOnSurface => FindObjectOfType<DivingBell>()?.onSurface ?? false;
 }
 
 internal sealed class EscapeMenuUtils : MonoBehaviour
@@ -145,7 +162,7 @@ internal sealed class EscapeMenuUtils : MonoBehaviour
 internal static class LobbyUtils
 {
     private static bool MasterClient => MainMenuHandler.SteamLobbyHandler?.MasterClient ?? false;
-    internal static bool IsOpen = (PhotonNetwork.CurrentRoom?.IsOpen ?? false) 
+    internal static bool IsOpen = (PhotonNetwork.CurrentRoom?.IsOpen ?? false)
         && (PhotonNetwork.CurrentRoom?.IsVisible ?? false);
 
     private static CSteamID? CurrentID
@@ -162,6 +179,8 @@ internal static class LobbyUtils
                 .GetValue<CSteamID>();
         }
     }
+
+    internal static int? CurPlayers => PlayerHandler.instance?.players.Count;
 
     internal static int? MaxPlayers
     {
@@ -201,12 +220,7 @@ internal static class LobbyUtils
     internal static bool StopAccepting()
     {
         CSteamID? id = CurrentID;
-        if (id == null)
-        {
-            return false;
-        }
-
-        if (!MasterClient)
+        if (id == null || !MasterClient)
         {
             return false;
         }
