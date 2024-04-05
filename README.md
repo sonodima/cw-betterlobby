@@ -12,7 +12,7 @@
 ## Features
 
 - Invite your friends in the lobby, and then fill it up with other people
-- Fill the lobby back up when someone quits, even after the game has stated
+- Fill the lobby back up when someone quits, even after the game has started
 - Avoid the standard matchmaking experience, which makes it hard to join a session
 without an error
 
@@ -27,7 +27,10 @@ the `Content Warning` game directory
 
 ## Notes and Safety Measures
 
-When using the late-join feature (prressing __FILL LOBBY__ while the game has started),
+Late-join is only enabled when on the surface, to avoid other players getting put directly
+in the underworld mid-game. If you want to fill the lobby back up, return to the surface first. 
+
+When using the late-join feature _(pressing __FILL LOBBY__ while the game has started)_,
 BetterLobby will wait for the lobby to reach its maximum capacity, and then disable the
 late-join.
 
@@ -42,7 +45,7 @@ will be ignored.
 
 ## Incompatible Plugins
 
-_The following plugins will not work correctly together with BetterLobby!_
+_The following plugins may not work correctly together with BetterLobby!_
 
 - [PublicHostingFix](https://thunderstore.io/c/content-warning/p/lazypatching/PublicHostingFix)
 - [Virality](https://thunderstore.io/c/content-warning/p/MaxWasUnavailable/Virality)
