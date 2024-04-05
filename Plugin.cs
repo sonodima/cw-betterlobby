@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using System.Collections;
 
 using BepInEx;
 using BepInEx.Logging;
@@ -37,13 +38,14 @@ public sealed class Plugin : BaseUnityPlugin
         // filled. (Landfall thank me later)
         if (PlayerHandler.instance != null)
         {
-            PlayerHandler.instance.OnPlayerJoined += OnPlayerJoined;
+            PlayerHandler.instance.OnPlayerJoined 
+                += (player) => StartCoroutine(OnPlayerJoined(player));
         }
 
         EscapeMenuUtils.CreateButton("FILL", "FILL LOBBY", OnFillPress);
     }
 
-    private void OnPlayerJoined(Player player)
+    private IEnumerator OnPlayerJoined(Player player)
     {
         int curPlayers = PlayerHandler.instance?.players.Count ?? 1;
         int maxPlayers = LobbyUtils.MaxPlayers ?? 4;
@@ -58,6 +60,19 @@ public sealed class Plugin : BaseUnityPlugin
                 LobbyUtils.StopAccepting();
             }
         }
+
+        // If we execute the RPC immediatly, bad things happen :(
+        yield return new WaitForSeconds(2f);
+
+        // If the game has started, open the remote door for the player that just
+        // joined.
+        if (SurfaceNetworkHandler.HasStarted)
+        {
+            Logger.LogInfo("Game has already started, sending RPCA_OpenDoor to the late-joiner...");
+            SurfaceNetworkHandler.Instance?.photonView?.RPC("RPCA_OpenDoor", RpcTarget.All, []);
+        }
+
+        yield break;
     }
 
     private void OnFillPress()
