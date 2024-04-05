@@ -24,3 +24,22 @@ the `Content Warning` game directory
 - Launch the game, click on __PLAY WITH FRIENDS__, and host a game
 - Invite the friends you want to play with, then press <kbd>ESC</kbd> to open the pause menu
 - Click on the new __FILL LOBBY__ button to open the matchmaking to the public
+
+## Notes
+
+When using the late-join feature (prressing __FILL LOBBY__ while the game has started),
+BetterLobby will wait for the lobby to reach its maximum capacity, and then disable the
+late-join.
+
+I implemented this because I suspect that leaving the lobby open would disrupt matchmaking
+even more, as players would attempt to connect to our full game. _(this happens with Virality)_
+
+Simply put, if the game has started, you opened the lobby, all players joined and then
+someone left, just press __FILL LOBBY__ again and it will fill back. 
+
+## Incompatible Plugins
+
+_The following plugins will not work correctly together with BetterLobby!_
+
+- [PublicHostingFix](https://thunderstore.io/c/content-warning/p/lazypatching/PublicHostingFix)
+- [Virality](https://thunderstore.io/c/content-warning/p/MaxWasUnavailable/Virality)
