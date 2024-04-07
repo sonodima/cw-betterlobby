@@ -9,10 +9,14 @@ namespace BetterLobby;
 
 internal static class LobbyHelpers
 {
+    private static readonly int s_dNumPlayers = 1;
     private static readonly int s_dMaxPlayers = 4;
 
-    internal static bool IsFull => PhotonNetwork.CountOfPlayers
+    internal static bool IsFull => (NumPlayers ?? s_dNumPlayers)
         >= (MaxPlayers ?? s_dMaxPlayers);
+
+    internal static int? NumPlayers
+        => PlayerHandler.instance?.players.Count;
 
     internal static int? MaxPlayers =>
         Traverse.Create(MainMenuHandler.SteamLobbyHandler)

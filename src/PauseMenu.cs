@@ -17,7 +17,7 @@ internal sealed class PauseMenu : MonoBehaviour
     private static GameObject UIButtonList
         => UIMenu?.transform.Find("LIST")?.gameObject;
 
-    internal static bool AddMainButton(string name, string text, UnityAction action)
+    internal static bool AddButton(string name, string text, UnityAction action)
     {
         var uiButtonList = UIButtonList;
         if (uiButtonList == null)

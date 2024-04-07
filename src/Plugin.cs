@@ -46,7 +46,7 @@ public sealed class Plugin : BaseUnityPlugin
                 += (player) => StartCoroutine(OnPlayerJoined(player));
         }
 
-        PauseMenu.AddMainButton("FILL", "FILL LOBBY", OnFillPress);
+        PauseMenu.AddButton("FILL", "FILL LOBBY", OnFillPress);
     }
 
     private IEnumerator OnPlayerJoined(Player player)
