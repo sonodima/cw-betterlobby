@@ -1,7 +1,8 @@
 <h1 align="center">Content Warning: BetterLobby 🌐</h1>
 
 <div align="center">
-  <img src="https://img.shields.io/badge/license-MIT-blue.svg"/>
+  <img src="https://img.shields.io/github/v/release/sonodima/cw-betterlobby?style=for-the-badge&color=green"/>
+  <img src="https://img.shields.io/badge/license-MIT-blue.svg?style=for-the-badge"/>
 </div>
 
 <br>
