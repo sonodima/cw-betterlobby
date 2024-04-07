@@ -4,7 +4,7 @@
   <a href="https://thunderstore.io/c/content-warning/p/sonodima/BetterLobby"> 
     <img src="https://img.shields.io/thunderstore/dt/sonodima/BetterLobby?style=for-the-badge&color=yellow"/>
   </a>
-  <a href="releases/latest"> 
+  <a href="https://github.com/sonodima/cw-betterlobby/releases/latest"> 
     <img src="https://img.shields.io/github/v/release/sonodima/cw-betterlobby?style=for-the-badge&color=green"/>
   </a>
   <a href="LICENSE"> 
