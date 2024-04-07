@@ -1,8 +1,15 @@
 <h1 align="center">Content Warning: BetterLobby 🌐</h1>
 
 <div align="center">
-  <img src="https://img.shields.io/github/v/release/sonodima/cw-betterlobby?style=for-the-badge&color=green"/>
-  <img src="https://img.shields.io/badge/license-MIT-blue.svg?style=for-the-badge"/>
+  <a href="https://thunderstore.io/c/content-warning/p/sonodima/BetterLobby"> 
+    <img src="https://img.shields.io/thunderstore/dt/sonodima/BetterLobby?style=for-the-badge&color=yellow"/>
+  </a>
+  <a href="releases/latest"> 
+    <img src="https://img.shields.io/github/v/release/sonodima/cw-betterlobby?style=for-the-badge&color=green"/>
+  </a>
+  <a href="LICENSE"> 
+    <img src="https://img.shields.io/badge/license-MIT-blue.svg?style=for-the-badge"/>
+  </a>
 </div>
 
 <br>
