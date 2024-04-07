@@ -15,9 +15,6 @@ namespace BetterLobby;
 [BepInPlugin(PluginInfo.PLUGIN_GUID, PluginInfo.PLUGIN_NAME, PluginInfo.PLUGIN_VERSION)]
 public sealed class Plugin : BaseUnityPlugin
 {
-    internal static bool IsOnSurface
-        => FindObjectOfType<DivingBell>()?.onSurface ?? false;
-
     public static ManualLogSource CurLogger { get; private set; } = null;
 
     private void Awake()
@@ -35,7 +32,7 @@ public sealed class Plugin : BaseUnityPlugin
     {
         // Only allow the plugin to run when the player is the master client
         // and on the surface.
-        if (!IsOnSurface || !LobbyHelpers.IsMasterClient)
+        if (!PhotonGameLobbyHandler.IsSurface || !PhotonNetwork.IsMasterClient)
         {
             return;
         }
@@ -49,7 +46,7 @@ public sealed class Plugin : BaseUnityPlugin
                 += (player) => StartCoroutine(OnPlayerJoined(player));
         }
 
-        PauseMenu.CreateButton("FILL", "FILL LOBBY", OnFillPress);
+        PauseMenu.AddMainButton("FILL", "FILL LOBBY", OnFillPress);
     }
 
     private IEnumerator OnPlayerJoined(Player player)
@@ -67,13 +64,21 @@ public sealed class Plugin : BaseUnityPlugin
         // If we execute the RPC immediatly, bad things happen :(
         yield return new WaitForSeconds(2f);
 
+        // Send the current objective another time, so that the newly connected client
+        // is on par with the progress.
+        if (PhotonGameLobbyHandler.CurrentObjective != null)
+        {
+            PhotonGameLobbyHandler.Instance.SetCurrentObjective(
+                PhotonGameLobbyHandler.CurrentObjective);
+        }
+
         // If the game has started, open the remote door for the player that just
         // joined.
-        if (SurfaceNetworkHandler.HasStarted)
+        if (SurfaceNetworkHandler.Instance != null && SurfaceNetworkHandler.HasStarted)
         {
             Logger.LogInfo("Game has already started, sending RPCA_OpenDoor to the late-joiner...");
-            SurfaceNetworkHandler.Instance?.photonView?
-                .RPC("RPCA_OpenDoor", RpcTarget.All, []);
+            SurfaceNetworkHandler.Instance.photonView.RPC(
+                "RPCA_OpenDoor", RpcTarget.All, []);
         }
 
         yield break;
@@ -87,7 +92,7 @@ public sealed class Plugin : BaseUnityPlugin
             return;
         }
 
-        if (!IsOnSurface)
+        if (!PhotonGameLobbyHandler.IsSurface)
         {
             Logger.LogWarning("You need to be on surface to fill the lobby!");
             return;

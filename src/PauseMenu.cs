@@ -9,12 +9,15 @@ namespace BetterLobby;
 
 internal sealed class PauseMenu : MonoBehaviour
 {
-    private static GameObject UIButtonList =>
-        Resources.FindObjectsOfTypeAll<Transform>()
+    private static GameObject UIMenu
+        => Resources.FindObjectsOfTypeAll<Transform>()
             .FirstOrDefault(obj => obj.name == "EscapeMenu")?
-            .Find("MainPage/LIST")?.gameObject;
+            .Find("MainPage")?.gameObject;
 
-    internal static bool CreateButton(string name, string text, UnityAction action)
+    private static GameObject UIButtonList
+        => UIMenu?.transform.Find("LIST")?.gameObject;
+
+    internal static bool AddMainButton(string name, string text, UnityAction action)
     {
         var uiButtonList = UIButtonList;
         if (uiButtonList == null)

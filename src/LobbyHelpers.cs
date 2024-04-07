@@ -9,15 +9,9 @@ namespace BetterLobby;
 
 internal static class LobbyHelpers
 {
-    private static readonly int s_dNumPlayers = 1;
     private static readonly int s_dMaxPlayers = 4;
 
-    internal static bool IsMasterClient
-        => MainMenuHandler.SteamLobbyHandler?.MasterClient ?? false;
-
-    internal static int? NumPlayers => PlayerHandler.instance?.players.Count;
-
-    internal static bool IsFull => (NumPlayers ?? s_dNumPlayers)
+    internal static bool IsFull => PhotonNetwork.CountOfPlayers
         >= (MaxPlayers ?? s_dMaxPlayers);
 
     internal static int? MaxPlayers =>
@@ -75,7 +69,7 @@ internal static class LobbyHelpers
             return false;
         }
 
-        if (!IsMasterClient)
+        if (!PhotonNetwork.IsMasterClient)
         {
             Plugin.CurLogger?.LogWarning("You can't perform this operation because you are not the master client!");
             return false;
