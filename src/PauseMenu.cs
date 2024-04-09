@@ -17,7 +17,7 @@ internal sealed class PauseMenu : MonoBehaviour
     private static GameObject UIButtonList
         => UIMenu?.transform.Find("LIST")?.gameObject;
 
-    internal static bool AddButton(string name, string text, UnityAction action)
+    internal static bool AddButton(string name, string text, UnityAction action, int? index = null)
     {
         var uiButtonList = UIButtonList;
         if (uiButtonList == null)
@@ -29,12 +29,16 @@ internal sealed class PauseMenu : MonoBehaviour
         GameObject uiBaseControl = uiButtonList.transform.Find("RESUME")?.gameObject;
         if (uiBaseControl == null)
         {
-            Plugin.CurLogger?.LogError("Failed to find the 'RESUME' control!");
+            Plugin.CurLogger?.LogError("Failed to find the 'RESUME' button to use as a template!");
             return false;
         }
 
         GameObject uiControl = Instantiate(uiBaseControl, uiButtonList.transform);
         uiControl.name = name;
+        if (index.HasValue)
+        {
+            uiControl.transform.SetSiblingIndex(index.Value);
+        }
 
         var uiButton = uiControl.GetComponentInChildren<Button>();
         if (uiButton == null)
