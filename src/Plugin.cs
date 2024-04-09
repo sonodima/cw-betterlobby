@@ -11,6 +11,7 @@ using UnityEngine.SceneManagement;
 namespace BetterLobby;
 
 
+[ContentWarningPlugin(PluginInfo.PLUGIN_GUID, PluginInfo.PLUGIN_VERSION, true)]
 [BepInPlugin(PluginInfo.PLUGIN_GUID, PluginInfo.PLUGIN_NAME, PluginInfo.PLUGIN_VERSION)]
 public sealed class Plugin : BaseUnityPlugin
 {
