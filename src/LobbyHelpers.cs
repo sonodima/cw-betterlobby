@@ -75,7 +75,8 @@ internal static class LobbyHelpers
 
         if (!PhotonNetwork.IsMasterClient)
         {
-            Plugin.CurLogger?.LogWarning("You can't perform this operation because you are not the master client!");
+            Plugin.CurLogger?.LogWarning("You can't perform this operation because you "
+                + "are not the master client!");
             return false;
         }
 

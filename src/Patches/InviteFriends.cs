@@ -14,7 +14,8 @@ internal static class InviteFriends
     {
         if (LobbyHelpers.IsFull)
         {
-            Plugin.CurLogger?.LogWarning("Lobby is already full, will not show the invite screen.");
+            Plugin.CurLogger?.LogWarning("Lobby is already full, will not show "
+                + "the invite screen.");
             return false;
         }
 
