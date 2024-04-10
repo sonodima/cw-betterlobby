@@ -1,6 +1,6 @@
 {
     "name": "BetterLobby",
-    "version_number": "1.1.2",
+    "version_number": "1.2.0",
     "website_url": "https://github.com/sonodima/cw-betterlobby",
     "description": "Improves the matchmaking system to allow friend lobbies with fill and a proper late-join!",
     "dependencies": ["BepInEx-BepInExPack-5.4.2100"]
