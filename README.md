@@ -38,6 +38,9 @@ the `Content Warning` game directory
 When you press the __INVITE FRIENDS__ button, the matchmaking is closed to the public and
 becomes friends-only. To open it up again, press __FILL LOBBY__.
 
+**Only the host needs to have BetterLobby installed. It aims to maintain 100% vanilla
+compatibility!**
+
 ## Notes and Safety Measures
 
 __LATE-JOIN IN THE UNDERWORLD IS DISABLED FOR RANDOMS__
