@@ -72,13 +72,17 @@ public sealed class Plugin : BaseUnityPlugin
                 PhotonGameLobbyHandler.CurrentObjective);
         }
 
+        // Wait a bit more, just to be sure that the RPCA_OpenDoor does not fail. (should
+        // not happen, but you never know)
+        yield return new WaitForSeconds(1f);
+
         // If the game has started, open the remote door for the player that just
         // joined.
-        if (SurfaceNetworkHandler.Instance != null && SurfaceNetworkHandler.HasStarted)
+        Photon.Realtime.Player netPlayer = player.refs.view?.Owner;
+        if (netPlayer != null && SurfaceNetworkHandler.Instance != null && SurfaceNetworkHandler.HasStarted)
         {
             Logger.LogInfo("Game has already started, sending RPCA_OpenDoor to the late-joiner...");
-            SurfaceNetworkHandler.Instance.photonView.RPC(
-                "RPCA_OpenDoor", RpcTarget.All, []);
+            SurfaceNetworkHandler.Instance.photonView.RPC("RPCA_OpenDoor", netPlayer, []);
         }
 
         yield break;
