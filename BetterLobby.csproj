@@ -37,5 +37,8 @@
     <Reference Include="UnityEngine.UI">
       <HintPath>lib\UnityEngine.UI.dll</HintPath>
     </Reference>
+    <Reference Include="Zorro.Core.Runtime.UI">
+      <HintPath>lib\Zorro.Core.Runtime.dll</HintPath>
+    </Reference>
   </ItemGroup>
 </Project>

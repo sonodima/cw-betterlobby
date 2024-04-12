@@ -2,6 +2,7 @@
 
 using BepInEx;
 using BepInEx.Logging;
+using BepInEx.Configuration;
 using HarmonyLib;
 
 using Photon.Pun;
@@ -15,10 +16,16 @@ namespace BetterLobby;
 [BepInPlugin(PluginInfo.PLUGIN_GUID, PluginInfo.PLUGIN_NAME, PluginInfo.PLUGIN_VERSION)]
 public sealed class Plugin : BaseUnityPlugin
 {
+    private ConfigEntry<bool> _incompatibleAck;
+
     public static ManualLogSource CurLogger { get; private set; } = null;
 
     private void Awake()
     {
+        _incompatibleAck = Config.Bind("Never Show Again", "Vanilla Compatible", false,
+            "Whether the warning dialog shown when non vanilla-compatible plugins are "
+                + "found is hidden");
+
         CurLogger = Logger;
         new Harmony("sonodima.BetterLobby").PatchAll();
     }
@@ -90,15 +97,33 @@ public sealed class Plugin : BaseUnityPlugin
 
     private void OnFillPress()
     {
+        // Check if the user has installed plugins that are marked as not
+        // "vanilla compatible".
+        if (GameHandler.GetPluginHash() != "none" && !_incompatibleAck.Value)
+        {
+            ModalOption[] buttons = [
+                new("Never Show Again", () => _incompatibleAck.Value = true),
+                new("Ok"),
+            ];
+
+            Modal.Show("NON-VANILLA PLUGINS",
+                @"You have installed plugins that are marked as non vanilla-compatible.
+This restricts the matchmaking to people with those same exact
+plugins, and BetterLobby may not be able to fill the lobby!", buttons);
+        }
+
         if (LobbyHelpers.IsFull)
         {
             Logger.LogWarning("Lobby is already full, will not make it public.");
+            Modal.ShowError("LOBBY IS FULL",
+                "Wait for a player to disconnect before making it public again!");
             return;
         }
 
         if (!PhotonGameLobbyHandler.IsSurface)
         {
-            Logger.LogWarning("You need to be on surface to fill the lobby!");
+            Logger.LogWarning("Attempted to make the lobby public while not on suface!");
+            Modal.ShowError("NOT READY", "You need to be on surface to make the lobby public!");
             return;
         }
 
