@@ -20,7 +20,7 @@ public static class LobbyHandler
     /// </summary>
     [HarmonyPrefix]
     [HarmonyPatch(typeof(SteamLobbyHandler), "HostMatch")]
-    private static bool OnHostMatch(ref bool privateMatch)
+    private static void OnHostMatch(ref bool privateMatch)
     {
         Plugin.CurLogger?.LogInfo($"Requested " + (privateMatch ? "PRIVATE" : "PUBLIC")
             + " match. Creating a PUBLIC lobby...");
@@ -29,7 +29,6 @@ public static class LobbyHandler
         // lobby initialization has finished.
         s_wasHostPrivate = privateMatch;
         privateMatch = false;
-        return true;
     }
 
     /// <summary>
